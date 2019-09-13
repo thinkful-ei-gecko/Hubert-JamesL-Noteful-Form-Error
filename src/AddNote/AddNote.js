@@ -4,20 +4,26 @@ import ValidateError from '../ValidateError/ValidateError'
 //import './NotefulForm/NotefulForm.css'
 
 export default class AddNote extends React.Component {
-  static contextType = ApiContext;
-
-  state = {
-    noteName: '',
-    noteContent: '',
-    noteFolder: '',
-    folderId: ''
+  constructor(props){
+    super(props)
+    this.state = {
+      noteName: '',
+      noteContent: '',
+      noteFolder: '',
+      folderId: '',
+      validMessage: '',
+      validError: false
+    }
   }
+  static contextType = ApiContext;
   
   updateName(name) {
+    name = name.trim();
     this.setState({noteName: name})
   };
 
   updateContent = (content) => {
+    content = content.trim();
     this.setState({noteContent: content})
   };
 
@@ -25,8 +31,44 @@ export default class AddNote extends React.Component {
     this.setState({noteFolder: folder})
   }
 
-  handleSubmitNote = (name, content, folderId, addNote) => {
+  validateNoteName(){
+    // let errMessage = this.state.validMessage;
+    // let hasError=false;
 
+    
+    if(this.state.noteName.length<3){
+      return 'Please enter a name that is at least 3 characters long';
+      // hasError=true
+    }
+    // else {
+    //   this.state.validMessage='';
+    //   // hasError=false;
+    // }
+    // this.setState({
+    //   validMessage: errMessage,
+    //   validError: !hasError
+    // })
+  }
+
+  validateNoteContent(){
+    // let errMessage = this.state.validMessage;
+    // let hasError=false;
+
+    if(this.state.noteContent.length<3){
+      return 'Please enter content that is at least 3 characters long';
+      // hasError=true
+    }
+    // else {
+    //   errMessage='';
+    //   hasError=false;
+    // }
+    // this.setState({
+    //   validMessage: errMessage,
+    //   validError: !hasError
+    // })
+  }
+
+  handleSubmitNote = (name, content, folderId, addNote) => {
     fetch(`http://localhost:9090/notes`, {
       method: 'POST',
       headers: {
@@ -38,23 +80,22 @@ export default class AddNote extends React.Component {
       if(res.ok) {
         return res.json()
       }
-      Promise.reject('You have an error!')
+      return Promise.reject('You have an error!')
     })
-    .then(data => console.log(addNote(data)))
+    .then(data => addNote(data))
   }
 
-  validateName() {
+  handleSubmit = (e) => {
+    e.preventDefault();
+    const {noteName, noteContent} = this.state;
+    const {addNote} = this.context;
+    this.handleSubmitNote(noteName, noteContent, this.context.folders.find((folder) => folder.name === this.state.noteFolder).id, addNote)
+  }
 
-  };
 
   render() {
-    const {name, content} = this.state;
-    const {addNote} = this.context;
-    this.handleSubmit = (e) => {
-      e.preventDefault();
-      this.handleSubmitNote(name, content, this.context.folders.find((folder) => folder.name === this.state.noteFolder).id, addNote)
-    }
-
+    const nameError = this.validateNoteName();
+    const contentError = this.validateNoteContent();
     return (
       <div>
         <form onSubmit={e => this.handleSubmit(e)}>
@@ -64,20 +105,26 @@ export default class AddNote extends React.Component {
             onChange={(e) => this.updateName(e.target.value)}
           >
           </input>
+          <ValidateError message={nameError} />
+
           <label htmlFor='note-content'>Content: </label>
           <input 
-          id='note-content'
-          onChange={(e) => this.updateContent(e.target.value)}
+            id='note-content'
+            onChange={(e) => this.updateContent(e.target.value)}
           >
           </input>
+          <ValidateError message={contentError} />
+
           <label htmlFor='note-folder'>Folder: </label>
           <input 
             id='note-folder'
-          onChange={(e) => this.updateFolder(e.target.value)}
+            onChange={(e) => this.updateFolder(e.target.value)}
           >
           </input>
-          <button type='submit'>Add Note</button>
+
+          <button type='submit' >Add Note</button>
         </form>
+        
       </div>
     )
   }

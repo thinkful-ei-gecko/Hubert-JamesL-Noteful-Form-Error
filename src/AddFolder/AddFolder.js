@@ -35,7 +35,7 @@ export default class AddFolder extends React.Component {
     }
     this.setState({
       validMessage: errMessage,
-      validError: hasError
+      validError: !hasError
     })
   }
   
