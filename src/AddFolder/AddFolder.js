@@ -1,5 +1,6 @@
 import React from 'react';
 import ApiContext from '../ApiContext';
+import ValidateError from '../ValidateError/ValidateError'
 
 //need name input and addfolder button
 
@@ -74,6 +75,7 @@ export default class AddFolder extends React.Component {
           <input id="add-folder" type="text" onChange={
             (e) => this.updateTitle(e.target.value)
           }></input>
+          {<ValidateError hasError={!this.state.validError} message={this.state.validMessage}/>}
         <button type="submit">Add Folder</button>
         
       </form>
