@@ -35,7 +35,7 @@ export default class AddFolder extends React.Component {
     }
     this.setState({
       validMessage: errMessage,
-      validError: !hasError
+      validError: hasError
     })
   }
   
@@ -66,7 +66,9 @@ export default class AddFolder extends React.Component {
     const { addFolder } = this.context;
     this.handleSubmit = (e) => {
       e.preventDefault();
-      this.addFolderRequest(this.state.name, addFolder)
+      if (!this.state.validError) {
+        this.addFolderRequest(this.state.name, addFolder)
+      }
     }
     
     return(
@@ -75,9 +77,8 @@ export default class AddFolder extends React.Component {
           <input id="add-folder" type="text" onChange={
             (e) => this.updateTitle(e.target.value)
           }></input>
-          {<ValidateError hasError={!this.state.validError} message={this.state.validMessage}/>}
-        <button type="submit">Add Folder</button>
-        
+        <button type="submit" onClick={() => this.props.history.goBack()} required>Add Folder</button>
+        {<ValidateError hasError={!this.state.validError} message={this.state.validMessage}/>}
       </form>
     )
   }

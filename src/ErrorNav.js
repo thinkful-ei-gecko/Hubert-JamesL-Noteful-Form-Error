@@ -1,11 +1,12 @@
 import React from 'react';
+import propTypes from 'prop-types'
 
-export default class ErrorPage extends React.Component {
-  state = {haseError: null};
+export default class ErrorNav extends React.Component {
+  state = {hasError: null};
   static getDerivedStateFromError(error){
     console.error(error);
     this.setState({
-      hasError: error 
+      hasError: true
     })
   }
   render(){
@@ -19,4 +20,8 @@ export default class ErrorPage extends React.Component {
     }
     return this.props.children
   }
+}
+
+ErrorNav.propTypes = {
+  children: propTypes.object.isRequired
 }
