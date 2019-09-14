@@ -1,38 +1,47 @@
 import React from 'react';
 import ApiContext from '../ApiContext'
 import ValidateError from '../ValidateError/ValidateError'
-//import './NotefulForm/NotefulForm.css'
+import '../NotefulForm/NotefulForm.css'
 
 export default class AddNote extends React.Component {
   constructor(props){
     super(props)
     this.state = {
-      noteName: '',
-      noteContent: '',
-      noteFolder: '',
+      noteName: {
+        value: '',
+        touched: false
+      },
+      noteContent: {
+        value: '',
+        touched: false
+      },
+      noteFolder: {
+        value: '',
+        touched: false
+      },
       folderId: '',
-      validMessage: '',
-      validError: false
     }
   }
   static contextType = ApiContext;
   
   updateName(name) {
-    name = name.trim();
-    this.setState({noteName: name})
+    this.setState({ noteName: { value: name.target.value, touched: true} });
   };
 
   updateContent = (content) => {
-    content = content.trim();
-    this.setState({noteContent: content})
+    this.setState({noteContent: { value: content.target.value, touched: true}})
   };
 
   updateFolder = (folder) => {
-    this.setState({noteFolder: folder})
+    this.setState({noteFolder: { value: folder.target.value, touched: true}})
   }
 
   validateNoteName(){
-    if(this.state.noteName.length<3){
+    let name = this.state.noteName.value.trim();
+    if (name.length === 0) {
+      return 'Please enter more than 1 character';
+    }
+    if(name.length<3){
       return 'Please enter a name that is at least 3 characters long';
     }
   }
@@ -51,13 +60,20 @@ export default class AddNote extends React.Component {
     }
   }
 
-  handleSubmitNote = (name, content, folderId, addNote) => {
+  handleSubmitNote = (e) => {
+    e.preventDefault();
+    const newData = {
+      name: this.state.noteName.value,
+      content: this.state.noteContent.value,
+      folderId: this.state.noteFolder.value,
+      modified: new Date()
+    }
     fetch(`http://localhost:9090/notes`, {
       method: 'POST',
       headers: {
         'Content-type': 'application/json'
       },
-      body: JSON.stringify({name: name, content: content, folderId: folderId, modified: new Date()})
+      body: JSON.stringify(newData)
     })
     .then(res => {
       if(res.ok) {
@@ -65,30 +81,32 @@ export default class AddNote extends React.Component {
       }
       return Promise.reject('You have an error!')
     })
-    .then(data => addNote(data))
+    .then(data => this.context.addNote(data))
+    .catch(e => console.log(e.message))
   }
 
-  handleSubmit = (e) => {
-    e.preventDefault();
-    const {noteName, noteContent} = this.state;
-    const {addNote} = this.context;
-    this.handleSubmitNote(noteName, noteContent, this.context.folders.find((folder) => folder.name === this.state.noteFolder).id, addNote)
-  }
+  // handleSubmit = (e) => {
+  //   e.preventDefault();
+  //   const {noteName, noteContent} = this.state;
+  //   const {addNote} = this.context;
+  //   this.handleSubmitNote(noteName, noteContent, this.context.folders.find((folder) => folder.name === this.state.noteFolder).id, addNote)
+  // }
 
 
   render() {
     const nameError = this.validateNoteName();
     const contentError = this.validateNoteContent();
     const folderError = this.validateNoteFolder();
-    const {folderSelect} = this.context;
+    const {folders} = this.context;
 
     return (
       <div>
-        <form onSubmit={e => this.handleSubmit(e)}>
+        <form onSubmit={e => this.handleSubmitNote(e)}>
           <label htmlFor='note-id'>Name: </label>
           <input 
             id='note-id'
-            onChange={(e) => this.updateName(e.target.value)}
+            onChange={(e) => this.updateName(e)}
+            value={this.state.noteName.value}
             required
           >
           </input>
@@ -97,35 +115,38 @@ export default class AddNote extends React.Component {
           <label htmlFor='note-content'>Content: </label>
           <input 
             id='note-content'
-            onChange={(e) => this.updateContent(e.target.value)}
+            onChange={(e) => this.updateContent(e)}
+            value={this.state.noteContent.value}
             required
           >
           </input>
           <ValidateError message={contentError} />
 
-          <label htmlFor='note-folder'>Folder: </label>
+          {/* <label htmlFor='note-folder'>Folder: </label>
           <input 
             id='note-folder'
             onChange={(e) => this.updateFolder(e.target.value)}
             required
           >
-          </input>
+          </input> */}
           <select
             name="folder-select"
-            value={this.state.folderId}
-            onChange={e => this.updateFolder(e.target.value)}>
+            value={this.state.noteFolder.value}
+            onChange={e => this.updateFolder(e)}>
             <option 
               key=""
-              value={null}>
+              value="">
               Select Folder
             </option>
-              {folderSelect.map(folder => <option key={folder.id} value={folder.id}> {folder.name} </option>)}
+              {folders.map(folder => {
+                return (<option key={folder.id} value={folder.id}> {folder.name} </option>)})
+              }
           </select>
           <ValidateError message={folderError} />
           <button
             type='submit'
             onClick={() => this.props.history.goBack()}
-            disabled={nameError || contentError || folderError}
+            disabled={nameError || folderError}
           > Add Note
           </button>
         </form>
