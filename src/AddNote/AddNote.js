@@ -2,6 +2,7 @@ import React from 'react';
 import ApiContext from '../ApiContext'
 import ValidateError from '../ValidateError/ValidateError'
 import '../NotefulForm/NotefulForm.css'
+import PropTypes from 'prop-types'
 
 export default class AddNote extends React.Component {
   constructor(props){
@@ -155,3 +156,4 @@ export default class AddNote extends React.Component {
     )
   }
 }
+

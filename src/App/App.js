@@ -10,6 +10,7 @@ import AddNote from '../AddNote/AddNote'
 import ApiContext from '../ApiContext';
 import ErrorNav from '../ErrorNav';
 import ErrorMain from '../ErrorMain'
+import PropTypes from 'prop-types'
 import config from '../config';
 import './App.css';
 
@@ -119,3 +120,13 @@ class App extends Component {
 }
 
 export default App;
+
+ApiContext.Provider.propTypes = {
+    value: PropTypes.shape({
+        notes: PropTypes.array.isRequired,
+        folders: PropTypes.array.isRequired,
+        deleteNote: PropTypes.func.isRequired,
+        addFolder: PropTypes.func.isRequired,
+        addNote: PropTypes.func.isRequired
+    })
+};
