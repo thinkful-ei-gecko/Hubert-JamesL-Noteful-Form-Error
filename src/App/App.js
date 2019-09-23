@@ -8,7 +8,6 @@ import NotePageMain from '../NotePageMain/NotePageMain';
 import AddFolder from '../AddFolder/AddFolder';
 import AddNote from '../AddNote/AddNote'
 import ApiContext from '../ApiContext';
-import ErrorNav from '../ErrorNav';
 import ErrorMain from '../ErrorMain'
 import PropTypes from 'prop-types'
 import config from '../config';
@@ -101,18 +100,16 @@ class App extends Component {
         return (
                 <ApiContext.Provider value={value}>
                     <div className="App">
-                        <ErrorNav>
+                    <ErrorMain> 
                             <nav className="App__nav">{this.renderNavRoutes()}</nav>
-                        </ErrorNav>
                         <header className="App__header">
                             <h1>
                                 <Link to="/">Noteful</Link>{' '}
                                 <FontAwesomeIcon icon="check-double" />
                             </h1>
                         </header>
-                        <ErrorMain>
                             <main className="App__main">{this.renderMainRoutes()}</main>
-                        </ErrorMain>
+                    </ErrorMain>
                     </div>
                 </ApiContext.Provider>
         );

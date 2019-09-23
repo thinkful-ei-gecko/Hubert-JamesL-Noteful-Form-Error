@@ -2,7 +2,6 @@ import React from 'react';
 import ApiContext from '../ApiContext'
 import ValidateError from '../ValidateError/ValidateError'
 import '../NotefulForm/NotefulForm.css'
-import PropTypes from 'prop-types'
 
 export default class AddNote extends React.Component {
   constructor(props){
@@ -123,13 +122,6 @@ export default class AddNote extends React.Component {
           </input>
           <ValidateError message={contentError} />
 
-          {/* <label htmlFor='note-folder'>Folder: </label>
-          <input 
-            id='note-folder'
-            onChange={(e) => this.updateFolder(e.target.value)}
-            required
-          >
-          </input> */}
           <select
             name="folder-select"
             value={this.state.noteFolder.value}

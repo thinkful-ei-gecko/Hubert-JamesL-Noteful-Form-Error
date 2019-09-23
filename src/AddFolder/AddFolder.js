@@ -7,36 +7,25 @@ import ValidateError from '../ValidateError/ValidateError'
 export default class AddFolder extends React.Component {
   constructor(props){
     super(props)
-      this.state={
-        name: '',
-        validMessage: '',
-        validError: false
+      this.state = {
+        name: {
+          value: '',
+          touched: false
+        },
       }
     }
   
-  static contextType=ApiContext;
+  static contextType =ApiContext;
 
-  validateFolder(input){
-    let errMessage=this.state.validMessage;
-    let hasError = false;
+  validateFolder(){
+    let name = this.state.name.value.trim();
 
-    input = input.trim();
-    if(input.length === 0){
-      errMessage = 'Folder name is required'
-      hasError=true;
+    if(name.length === 0){
+      return 'Folder name is required'
     }
-    else if(input.length < 3){
-      errMessage = 'Folder name must be at least 3 characters'
-      hasError=true;
+    else if(name.length < 3){
+      return 'Folder name must be at least 3 characters'
     }
-    else {
-      errMessage= ''
-      hasError=false;
-    }
-    this.setState({
-      validMessage: errMessage,
-      validError: hasError
-    })
   }
   
 
@@ -58,8 +47,13 @@ export default class AddFolder extends React.Component {
     .catch(err => console.log(err))
   }
 
-  updateTitle = (name) => {
-    this.setState({name: name}, ()=> {this.validateFolder(name)})
+  updateTitle = (val) => {
+    this.setState({
+      name: {
+        value: val.target.value,
+        touched: true
+      }
+    })
   }
 
   render() {
@@ -67,18 +61,26 @@ export default class AddFolder extends React.Component {
     this.handleSubmit = (e) => {
       e.preventDefault();
       if (!this.state.validError) {
-        this.addFolderRequest(this.state.name, addFolder)
+        this.addFolderRequest(this.state.name.value, addFolder)
       }
     }
     
     return(
       <form onSubmit={(e) => this.handleSubmit(e)}>
         <label htmlFor="add-folder">Create a Folder</label>
-          <input id="add-folder" type="text" onChange={
-            (e) => this.updateTitle(e.target.value)
-          }></input>
-        <button type="submit" onClick={() => this.props.history.goBack()} required>Add Folder</button>
-        {<ValidateError hasError={!this.state.validError} message={this.state.validMessage}/>}
+          <input 
+            id="add-folder"
+            type="text"
+            onChange={(e) => this.updateTitle(e)}
+            value={this.state.name.value}>
+            </input>
+          {this.state.name.touched && <ValidateError message={this.validateFolder()}/>}
+        <button 
+          type="submit"
+          onClick={() => this.props.history.goBack()}
+          disabled={this.validateFolder()}>
+          Add Folder
+        </button>
       </form>
     )
   }
