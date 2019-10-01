@@ -47,13 +47,13 @@ export default class AddNote extends React.Component {
   }
 
   validateNoteContent(){
-    if(this.state.noteContent.length<3){
+    if(this.state.noteContent.value.length <= 3){
       return 'Please enter content that is at least 3 characters long';
     }
   }
 
   validateNoteFolder() {
-    if(!this.state.noteFolder) {
+    if(!this.state.noteFolder.touched) {
       return 'Folder name is required'
     } else {
       return null
@@ -128,7 +128,9 @@ export default class AddNote extends React.Component {
             onChange={e => this.updateFolder(e)}>
             <option 
               key=""
-              value="">
+              value=""
+              disabled
+              >
               Select Folder
             </option>
               {folders.map(folder => {
@@ -139,7 +141,7 @@ export default class AddNote extends React.Component {
           <button
             type='submit'
             onClick={() => this.props.history.goBack()}
-            disabled={nameError || folderError}
+            disabled={nameError || folderError || contentError}
           > Add Note
           </button>
         </form>
