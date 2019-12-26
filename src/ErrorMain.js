@@ -23,5 +23,5 @@ export default class ErrorMain extends React.Component {
 }
 
 ErrorMain.propTypes = {
-  children: propTypes.object.isRequired
+  children: propTypes.array.isRequired
 }
